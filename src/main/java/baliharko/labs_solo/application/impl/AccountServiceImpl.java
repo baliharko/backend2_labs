@@ -2,6 +2,7 @@ package baliharko.labs_solo.application.impl;
 
 import baliharko.labs_solo.application.IAccountService;
 import baliharko.labs_solo.domain.Account;
+import baliharko.labs_solo.domain.IRiskAssessment;
 import baliharko.labs_solo.persistence.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 public class AccountServiceImpl implements IAccountService {
 
     private final AccountRepository repository;
+    private final IRiskAssessment riskClient;
 
 
     @Override
@@ -45,8 +47,12 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public Account openAccount(String holder) {
+
         if (repository.existsAccountByHolder(holder))
             throw new IllegalArgumentException("Account with holder name {" + holder + "} already exists.");
+
+        if(!riskClient.passingCreditCheck(holder))
+            throw new RuntimeException("Failed credit check for holder: " + holder);
 
         return repository.save(new Account(holder, 0.0));
     }
