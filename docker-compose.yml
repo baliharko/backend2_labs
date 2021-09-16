@@ -10,7 +10,7 @@ services:
       - "3307:3307"
 
   application:
-    image: baliharko/bank_lab:0.0.4
+    image: baliharko/bank_lab:0.0.5
     environment:
       MYSQL_HOST: mysql
     ports:
