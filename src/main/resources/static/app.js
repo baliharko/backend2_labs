@@ -19,10 +19,14 @@ withdrawBtn.addEventListener("click", () => {
 
 const transactionRequest = {
     DEPOSIT: "deposit",
-    WITHDRAW: "withdraw"
-}
+    WITHDRAW: "withdraw",
+};
 
 const transaction = (holder, amount, transactionRequest) => {
+
+    let statusCode;
+    let message;
+
     fetch(`http://localhost:8080/${transactionRequest}`, {
         method: "post",
         headers: {
@@ -34,18 +38,38 @@ const transaction = (holder, amount, transactionRequest) => {
             amount: amount,
         }),
     })
-        .then((data) => data.json())
+        .then((data) => {
+            statusCode = data.status;
+            message = data.message;
+            return data.json();
+        })
         .then((json) => {
 
-            if(!json.holder)
-                openAccount(holder);
-            else
-                updateInfo(json.holder, json.balance);
+            if (statusCode) {
+                if (statusCode == 501) {
+                    console.log("TRANSACTION: in open account")
+                    openAccount(holder);
+                } else if (statusCode == 200) {
+                    console.log("TRANSACTION: in update info 200")
+                    updateInfo(json.holder, json.balance);
+                } else {                    
+                    updateInfo(json.message || message);
+                }
+                return;
+            }
+
+            console.log("TRANSACTION: outside json status")
+            console.log(json);
+            updateInfo(json.message);
         })
         .catch((error) => console.log(error));
 };
 
 const openAccount = (holder) => {
+
+    let statusCode;
+    let message;
+
     fetch("http://localhost:8080/openaccount", {
         method: "post",
         headers: {
@@ -56,14 +80,25 @@ const openAccount = (holder) => {
             holder: holder,
         }),
     })
-        .then((data) => data.json())
+        .then((data) => {
+            statusCode = data.status;
+            message = data.message;
+            return data.json();
+        })
         .then((json) => {
-            updateInfo('New account opened for ' + json.holder, json.balance);
+
+            console.log(statusCode);
+            console.log(message);
+
+            if (statusCode && statusCode == 200) 
+                updateInfo("New account opened for " + json.holder, json.balance);
+            else 
+                updateInfo(json.message || message);
         })
         .catch((error) => console.log(error));
 };
 
 const updateInfo = (holder, balance) => {
     const info = document.querySelector("#show-info");
-    info.innerText = `${holder}: ${balance} kr`;
+    info.innerText = balance ? `${holder}: ${balance} kr` : `${holder}`;
 };

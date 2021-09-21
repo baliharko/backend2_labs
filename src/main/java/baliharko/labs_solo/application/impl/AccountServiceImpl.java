@@ -6,7 +6,9 @@ import baliharko.labs_solo.domain.IRiskAssessment;
 import baliharko.labs_solo.persistence.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -29,7 +31,7 @@ public class AccountServiceImpl implements IAccountService {
     public Account getAccountByHolder(String holder) {
         Account acc;
         if ((acc = repository.findAccountByHolder(holder)) == null)
-            throw new IllegalArgumentException("No account with holder name {" + holder + "} found.");
+            throw new ResponseStatusException(HttpStatus.valueOf(501) , "No account with holder name {" + holder + "} found.");
 
         return acc;
     }
