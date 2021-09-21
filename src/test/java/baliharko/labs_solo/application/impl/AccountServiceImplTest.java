@@ -5,6 +5,7 @@ import baliharko.labs_solo.persistence.AccountRepository;
 import baliharko.labs_solo.risk.RiskAssessmentClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +41,7 @@ class AccountServiceImplTest {
 
         when(mockRepository.findAccountByHolder(holder)).thenReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () -> service.getAccountByHolder(holder));
+        assertThrows(ResponseStatusException.class, () -> service.getAccountByHolder(holder));
     }
 
     @Test
