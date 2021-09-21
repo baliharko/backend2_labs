@@ -46,21 +46,17 @@ const transaction = (holder, amount, transactionRequest) => {
         .then((json) => {
 
             if (statusCode) {
-                if (statusCode == 501) {
-                    console.log("TRANSACTION: in open account")
+                if (statusCode == 501)
                     openAccount(holder);
-                } else if (statusCode == 200) {
-                    console.log("TRANSACTION: in update info 200")
+                else if (statusCode == 200) 
                     updateInfo(json.holder, json.balance);
-                } else {                    
+                else                    
                     updateInfo(json.message || message);
-                }
+                                    
                 return;
             }
 
-            console.log("TRANSACTION: outside json status")
-            console.log(json);
-            updateInfo(json.message);
+            updateInfo(json.message || message);
         })
         .catch((error) => console.log(error));
 };
@@ -86,9 +82,6 @@ const openAccount = (holder) => {
             return data.json();
         })
         .then((json) => {
-
-            console.log(statusCode);
-            console.log(message);
 
             if (statusCode && statusCode == 200) 
                 updateInfo("New account opened for " + json.holder, json.balance);
